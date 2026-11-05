@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Soạn giáo án GDTC</title>
+<script src="https://appsforoffice.microsoft.com/lib/1/hosted/office.js"></script>
+<style>
+:root{--ink:#1f2328;--muted:#5b6470;--line:#d9dde3;--bg:#fff;--soft:#eef3fb;--accent:#185abd;--accent-ink:#fff;--bad:#b42318}
+@media (prefers-color-scheme:dark){:root{--ink:#e8eaed;--muted:#a0a8b3;--line:#3a4048;--bg:#1e2227;--soft:#26303d;--accent:#6ea1f0;--accent-ink:#10161d;--bad:#f97066}}
+*{box-sizing:border-box}
+body{margin:0;padding:14px;font:13px/1.5 "Segoe UI",system-ui,sans-serif;color:var(--ink);background:var(--bg)}
+h1{font-size:16px;margin:0 0 2px}
+h2{font-size:13px;margin:0 0 8px}
+p.hint{margin:0 0 12px;color:var(--muted)}
+section{padding:14px 0;border-top:1px solid var(--line)}
+label{display:block;margin:0 0 8px;color:var(--muted)}
+input,select{display:block;width:100%;margin-top:2px;padding:6px 8px;font:inherit;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:3px}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+button{font:inherit;cursor:pointer;padding:6px 10px;border-radius:3px;border:1px solid var(--line);background:var(--bg);color:var(--ink)}
+button:hover{background:var(--soft)}
+button.main{width:100%;background:var(--accent);border-color:var(--accent);color:var(--accent-ink);font-weight:600;padding:8px}
+button.main:hover{filter:brightness(1.1)}
+.btns{display:flex;flex-wrap:wrap;gap:6px}
+.chips{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:8px}
+.chips button{padding:2px 9px;border-radius:12px;font-size:12px}
+.lvl{margin:0 0 4px;color:var(--muted);font-size:12px}
+:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
+#status{position:sticky;bottom:0;margin-top:8px;padding:8px 10px;border-radius:3px;background:var(--soft);display:none}
+#status.err{color:var(--bad)}
+</style>
+</head>
+<body>
+<h1>Soạn giáo án GDTC</h1>
+<p class="hint">Giáo dục thể chất tiểu học, sách Kết nối tri thức với cuộc sống. Nội dung được chèn tại vị trí con trỏ.</p>
+
+<section>
+  <h2>Thông tin bài dạy</h2>
+  <label>Tên bài học<input id="ten" placeholder="Ví dụ: Bài 3. Tập hợp hàng ngang"></label>
+  <label>Chủ đề<input id="cd" list="dscd" placeholder="Chọn hoặc nhập chủ đề">
+    <datalist id="dscd"><option value="Đội hình đội ngũ"><option value="Bài tập thể dục"><option value="Vận động cơ bản"><option value="Thể thao tự chọn"><option value="Trò chơi vận động"></datalist>
+  </label>
+  <div class="row">
+    <label>Lớp<select id="lop"><option>3</option><option>4</option><option>5</option></select></label>
+    <label>Thời lượng<input id="tg" value="1 tiết (35 phút)"></label>
+  </div>
+  <button class="main" id="full">Chèn khung giáo án đầy đủ</button>
+</section>
+
+<section>
+  <h2>Chèn từng phần</h2>
+  <div class="btns">
+    <button id="ycct">Yêu cầu cần đạt</button>
+    <button id="dd">Địa điểm và phương tiện</button>
+    <button id="tt">Bảng tiến trình</button>
+    <button id="addrow">Thêm hàng vào bảng</button>
+  </div>
+  <label style="margin-top:12px">Khung trò chơi vận động
+    <input id="tc" placeholder="Tên trò chơi">
+  </label>
+  <button id="addtc">Chèn khung trò chơi</button>
+</section>
+
+<section>
+  <h2>Cụm từ viết yêu cầu cần đạt</h2>
+  <p class="lvl">Nhận biết</p>
+  <div class="chips" data-v="nêu được tên động tác,nhận biết được hướng di chuyển,quan sát tranh và mô tả được"></div>
+  <p class="lvl">Thực hiện</p>
+  <div class="chips" data-v="thực hiện được động tác,thực hiện đúng kĩ thuật,phối hợp với bạn khi tập luyện,chơi đúng luật"></div>
+  <p class="lvl">Vận dụng</p>
+  <div class="chips" data-v="tự tập luyện ở nhà,giữ an toàn khi tập luyện,vận dụng vào trò chơi"></div>
+</section>
+
+<section>
+  <h2>Sửa văn bản đã có</h2>
+  <div class="btns">
+    <button id="bold">In đậm các đầu mục</button>
+    <button id="bullet">Gạch đầu dòng đoạn chọn</button>
+  </div>
+  <p class="hint" style="margin-top:8px">Đầu mục gồm: I., II., 1. Về…, a), b)…</p>
+</section>
+
+<div id="status" role="status" aria-live="polite"></div>
+
+<script>
+const $ = id => document.getElementById(id);
+const say = (m, bad) => { const s = $("status"); s.textContent = m; s.className = bad ? "err" : ""; s.style.display = "block"; };
+const v = id => $(id).value.trim() || "……";
+
+// Thành phần văn bản: H = tiêu đề, P = đoạn in đậm, L = nhãn in đậm + nội dung thường, T = bảng
+const H = (text, lvl) => ({ text, style: Word.Style["heading" + lvl], heading: true });
+const P = (text, bold) => ({ text, bold: !!bold });
+const L = (label, text) => ({ label, text: text || "" });
+const T = rows => ({ table: rows });
+
+const ycct = () => [
+  H("I. YÊU CẦU CẦN ĐẠT", 2),
+  L("1. Về phẩm chất: ", "Chăm chỉ, tích cực tập luyện; trung thực, đoàn kết, có trách nhiệm trong tập luyện và trò chơi."),
+  L("2. Về năng lực"),
+  L("a) Năng lực chung: ", "Tự chủ và tự học (tự giác thực hiện nhiệm vụ học tập); giao tiếp và hợp tác (biết phối hợp với bạn khi tập luyện)."),
+  L("b) Năng lực đặc thù: ", "")
+];
+const diaDiem = () => [
+  H("II. ĐỊA ĐIỂM VÀ PHƯƠNG TIỆN", 2),
+  L("1. Địa điểm: ", "Sân trường, vệ sinh sạch sẽ, bảo đảm an toàn tập luyện."),
+  L("2. Phương tiện: "),
+  L("- Giáo viên: ", "Tranh ảnh, còi, ..."),
+  L("- Học sinh: ", "Trang phục thể thao, giày dép phù hợp.")
+];
+const bang = () => T([
+  ["Nội dung", "Thời gian", "Số lần", "Hoạt động của giáo viên", "Hoạt động của học sinh"],
+  ["I. Hoạt động mở đầu", "5–7 phút", "", "", ""],
+  ["1. Nhận lớp", "1–2 phút", "", "Kiểm tra sĩ số, phổ biến nội dung và yêu cầu giờ học.", "Báo cáo sĩ số, nghe phổ biến, sẵn sàng học tập."],
+  ["2. Khởi động", "", "", "", ""],
+  ["a) Khởi động chung", "2–3 phút", "", "", ""],
+  ["b) Khởi động chuyên môn", "1–2 phút", "", "", ""],
+  ["c) Trò chơi khởi động", "1–2 phút", "", "", ""],
+  ["II. Hoạt động hình thành kiến thức mới", "8–10 phút", "", "", ""],
+  ["Kiến thức, kĩ năng mới", "", "", "", ""],
+  ["III. Hoạt động luyện tập", "14–16 phút", "", "", ""],
+  ["1. Tập đồng loạt", "", "", "", ""],
+  ["2. Tập theo tổ nhóm", "", "", "", ""],
+  ["3. Thi đua hoặc trò chơi", "", "", "", ""],
+  ["4. Bài tập thể lực", "", "", "", ""],
+  ["IV. Hoạt động vận dụng", "3–5 phút", "", "", ""],
+  ["Câu hỏi, tình huống vận dụng", "", "", "", ""],
+  ["V. Kết thúc", "2–3 phút", "", "", ""],
+  ["Thả lỏng, nhận xét, giao bài tập về nhà", "", "", "", ""]
+]);
+const troChoi = name => [
+  H("Trò chơi: " + (name || "……"), 3),
+  L("Chuẩn bị: "), L("Cách chơi: "), L("Luật chơi: "), L("Yêu cầu an toàn: ")
+];
+const khung = () => [
+  P("KẾ HOẠCH BÀI DẠY", true),
+  L("Môn học: ", "Giáo dục thể chất – Lớp " + $("lop").value + " (Kết nối tri thức với cuộc sống)"),
+  L("Chủ đề: ", v("cd")), L("Tên bài: ", v("ten")), L("Thời lượng: ", v("tg")),
+  ...ycct(), ...diaDiem(),
+  H("III. TIẾN TRÌNH DẠY HỌC", 2), bang()
+];
+
+// Chèn lần lượt từ vị trí con trỏ
+async function chen(items) {
+  try {
+    await Word.run(async ctx => {
+      let cur = ctx.document.getSelection();
+      for (const it of items) {
+        if (it.table) {
+          const t = cur.insertTable(it.table.length, it.table[0].length, "After", it.table);
+          t.styleBuiltIn = Word.Style.gridTable1Light;
+          t.headerRowCount = 1;
+          cur = t;
+        } else {
+          const p = cur.insertParagraph("", "After");
+          p.styleBuiltIn = it.style || Word.Style.normal;
+          if (it.label !== undefined) {
+            p.insertText(it.label, "End").font.bold = true;
+            p.insertText(it.text, "End").font.bold = false;
+          } else {
+            p.insertText(it.text, "End");
+            p.font.bold = !!(it.bold || it.heading);
+            if (it.heading) p.font.color = "#000000";
+          }
+          cur = p;
+        }
+      }
+      await ctx.sync();
+    });
+    say("Đã chèn vào tài liệu.");
+  } catch (e) { say("Không chèn được: " + e.message, true); }
+}
+
+async function chenChu(text) {
+  try {
+    await Word.run(async ctx => {
+      ctx.document.getSelection().insertText(text + " ", "End");
+      await ctx.sync();
+    });
+  } catch (e) { say("Không chèn được: " + e.message, true); }
+}
+
+Office.onReady(info => {
+  if (info.host !== Office.HostType.Word) { say("Khung này chỉ chạy trong Word.", true); return; }
+  $("full").onclick = () => chen(khung());
+  $("ycct").onclick = () => chen(ycct());
+  $("dd").onclick = () => chen(diaDiem());
+  $("tt").onclick = () => chen([bang()]);
+  $("addtc").onclick = () => chen(troChoi($("tc").value.trim()));
+
+  document.querySelectorAll(".chips").forEach(box => {
+    box.dataset.v.split(",").forEach(txt => {
+      const b = document.createElement("button");
+      b.textContent = txt; b.onclick = () => chenChu(txt);
+      box.appendChild(b);
+    });
+  });
+
+  $("addrow").onclick = async () => {
+    try {
+      await Word.run(async ctx => {
+        const t = ctx.document.getSelection().parentTableOrNullObject;
+        t.load("isNullObject");
+        await ctx.sync();
+        if (t.isNullObject) { say("Đặt con trỏ vào bảng cần thêm hàng.", true); return; }
+        t.addRows("End", 1);
+        await ctx.sync();
+        say("Đã thêm 1 hàng vào cuối bảng.");
+      });
+    } catch (e) { say("Không thêm được hàng: " + e.message, true); }
+  };
+
+  $("bold").onclick = async () => {
+    const re = /^\s*((I{1,3}|IV|V)\.|\d\. (Về|Địa điểm|Phương tiện)|[a-d]\)|Trò chơi:|Chuẩn bị:|Cách chơi:|Luật chơi:)/;
+    try {
+      await Word.run(async ctx => {
+        const ps = ctx.document.body.paragraphs;
+        ps.load("items/text");
+        await ctx.sync();
+        let n = 0;
+        ps.items.forEach(p => { if (re.test(p.text)) { p.font.bold = true; n++; } });
+        await ctx.sync();
+        say("Đã in đậm " + n + " đầu mục.");
+      });
+    } catch (e) { say("Không định dạng được: " + e.message, true); }
+  };
+
+  $("bullet").onclick = async () => {
+    try {
+      await Word.run(async ctx => {
+        const ps = ctx.document.getSelection().paragraphs;
+        ps.load("items");
+        await ctx.sync();
+        if (!ps.items.length) { say("Hãy chọn các đoạn cần gạch đầu dòng.", true); return; }
+        const list = ps.items[0].startNewList();
+        list.load("id"); await ctx.sync();
+        for (let i = 1; i < ps.items.length; i++) ps.items[i].attachToList(list.id, 0);
+        list.setLevelBullet(0, Word.ListBullet.solid);
+        await ctx.sync();
+        say("Đã gạch đầu dòng.");
+      });
+    } catch (e) { say("Không định dạng được: " + e.message, true); }
+  };
+});
+</script>
+</body>
+</html>

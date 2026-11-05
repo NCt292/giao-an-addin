@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Thay TOÀN BỘ chuỗi https://TEN-BAN.github.io/giao-an-addin bằng địa chỉ web nơi bạn đặt các file này -->
+<OfficeApp xmlns="http://schemas.microsoft.com/office/appforoffice/1.1"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xmlns:bt="http://schemas.microsoft.com/office/officeappbasictypes/1.0"
+  xsi:type="TaskPaneApp">
+  <Id>7c1e5a52-3b0e-4f4a-9d2a-5c8f1b6e2a10</Id>
+  <Version>1.0.0.0</Version>
+  <ProviderName>Soạn giáo án</ProviderName>
+  <DefaultLocale>vi-VN</DefaultLocale>
+  <DisplayName DefaultValue="Soạn giáo án GDTC"/>
+  <Description DefaultValue="Khung bên cạnh giúp soạn và sửa kế hoạch bài dạy Giáo dục thể chất tiểu học ngay trong Word."/>
+  <IconUrl DefaultValue="https://TEN-BAN.github.io/giao-an-addin/icon-32.png"/>
+  <HighResolutionIconUrl DefaultValue="https://TEN-BAN.github.io/giao-an-addin/icon-80.png"/>
+  <SupportUrl DefaultValue="https://TEN-BAN.github.io/giao-an-addin/taskpane.html"/>
+  <AppDomains><AppDomain>https://TEN-BAN.github.io</AppDomain></AppDomains>
+  <Hosts><Host Name="Document"/></Hosts>
+  <DefaultSettings>
+    <SourceLocation DefaultValue="https://TEN-BAN.github.io/giao-an-addin/taskpane.html"/>
+  </DefaultSettings>
+  <Permissions>ReadWriteDocument</Permissions>
+  <VersionOverrides xmlns="http://schemas.microsoft.com/office/taskpaneappversionoverrides" xsi:type="VersionOverridesV1_0">
+    <Hosts>
+      <Host xsi:type="Document">
+        <DesktopFormFactor>
+          <ExtensionPoint xsi:type="PrimaryCommandSurface">
+            <OfficeTab id="TabHome">
+              <Group id="GiaoAnGroup">
+                <Label resid="GroupLabel"/>
+                <Icon>
+                  <bt:Image size="16" resid="Icon16"/>
+                  <bt:Image size="32" resid="Icon32"/>
+                  <bt:Image size="80" resid="Icon80"/>
+                </Icon>
+                <Control xsi:type="Button" id="GiaoAnButton">
+                  <Label resid="ButtonLabel"/>
+                  <Supertip>
+                    <Title resid="ButtonLabel"/>
+                    <Description resid="ButtonTip"/>
+                  </Supertip>
+                  <Icon>
+                    <bt:Image size="16" resid="Icon16"/>
+                    <bt:Image size="32" resid="Icon32"/>
+                    <bt:Image size="80" resid="Icon80"/>
+                  </Icon>
+                  <Action xsi:type="ShowTaskpane">
+                    <TaskpaneId>GiaoAnPane</TaskpaneId>
+                    <SourceLocation resid="PaneUrl"/>
+                  </Action>
+                </Control>
+              </Group>
+            </OfficeTab>
+          </ExtensionPoint>
+        </DesktopFormFactor>
+      </Host>
+    </Hosts>
+    <Resources>
+      <bt:Images>
+        <bt:Image id="Icon16" DefaultValue="https://TEN-BAN.github.io/giao-an-addin/icon-16.png"/>
+        <bt:Image id="Icon32" DefaultValue="https://TEN-BAN.github.io/giao-an-addin/icon-32.png"/>
+        <bt:Image id="Icon80" DefaultValue="https://TEN-BAN.github.io/giao-an-addin/icon-80.png"/>
+      </bt:Images>
+      <bt:Urls>
+        <bt:Url id="PaneUrl" DefaultValue="https://TEN-BAN.github.io/giao-an-addin/taskpane.html"/>
+      </bt:Urls>
+      <bt:ShortStrings>
+        <bt:String id="GroupLabel" DefaultValue="Giáo án"/>
+        <bt:String id="ButtonLabel" DefaultValue="Soạn giáo án GDTC"/>
+      </bt:ShortStrings>
+      <bt:LongStrings>
+        <bt:String id="ButtonTip" DefaultValue="Mở khung soạn và sửa kế hoạch bài dạy bên cạnh văn bản."/>
+      </bt:LongStrings>
+    </Resources>
+  </VersionOverrides>
+</OfficeApp>
